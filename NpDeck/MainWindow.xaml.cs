@@ -103,6 +103,7 @@ namespace NpDeck
 			}
 			if (LastResult != null && LastResult.Title == result.Title) return;
 			LastResult = result;
+			StatusText = String.Format("New track: {0}", result.Title);
 			Reformat();
 		}
 
@@ -127,29 +128,33 @@ namespace NpDeck
 			}
 		}
 
-		private void SaveImage()
+		private bool SaveImage()
 		{
 			try
 			{
 				ImageRenderer.Render(FormattedResult, _config);
+				return true;
 			}
 			catch (Exception exc)
 			{
 				StatusText = string.Format("Couldn't save image: {0}", exc);
 				if (Debugger.IsAttached) throw;
+				return false;
 			}
 		}
 
-		private void SaveText()
+		private bool SaveText()
 		{
 			try
 			{
 				File.WriteAllText(Config.TextFilename, FormattedResult, Config.GetCurrentEncoding());
+				return true;
 			}
 			catch (Exception exc)
 			{
 				StatusText = string.Format("Couldn't save text: {0}", exc);
 				if (Debugger.IsAttached) throw;
+				return false;
 			}
 		}
 
@@ -190,11 +195,29 @@ namespace NpDeck
 			}
 
 			var cd = new ColorDialog {AnyColor = true, Color = System.Drawing.Color.FromArgb(color.R, color.G, color.B), FullOpen = true};
-			if (cd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			if (cd.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
+			_config.ImageTextColor = Color.FromRgb(cd.Color.R, cd.Color.G, cd.Color.B).ToString();
+			Reformat();
+		}
+
+		private void Redraw_Click(object sender, RoutedEventArgs e)
+		{
+			if (SaveImage())
 			{
-				_config.ImageTextColor = Color.FromRgb(cd.Color.R, cd.Color.G, cd.Color.B).ToString();
+				StatusText = "Image saved.";
 			}
 		}
 
+		private void PickFont_Click(object sender, RoutedEventArgs e)
+		{
+			var fp = new FontPicker(_config.ImageFontName, _config.ImageFontSize);
+			var result = fp.ShowDialog();
+			if (result != null && result.Value == true)
+			{
+				_config.ImageFontName = fp.TargetFontName;
+				_config.ImageFontSize = (int)Math.Round(fp.TargetFontSize);	
+			}
+			Reformat();
+		}
 	}
 }

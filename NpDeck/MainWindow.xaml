@@ -79,31 +79,38 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Config.ImageFilename, Mode=TwoWay}" VerticalAlignment="Center" />
-                        <Label Content="Destination File" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
-                        <Label Content="Font" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" />
+                        <Label Content="Destination File" HorizontalAlignment="Stretch" Grid.Row="0" />
+                        <Label Content="Font Name and Size" HorizontalAlignment="Stretch" Grid.Row="1" />
                         <Grid Grid.Row="1" Grid.Column="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="8*"></ColumnDefinition>
                                 <ColumnDefinition Width="2*"></ColumnDefinition>
+                                <ColumnDefinition Width="4*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding Config.ImageFontName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Center" Grid.Column="0" TextChanged="OutputSettingChanged" />
-                            <TextBox Text="{Binding Config.ImageFontSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Center" Grid.Column="1" Margin="5,0,0,0" TextChanged="OutputSettingChanged" />
+                            <TextBox Text="{Binding Config.ImageFontName, Mode=TwoWay}" Grid.Column="0" TextChanged="OutputSettingChanged" VerticalAlignment="Center" />
+                            <TextBox Text="{Binding Config.ImageFontSize, Mode=TwoWay}" Grid.Column="1" Margin="5,0,0,0" TextChanged="OutputSettingChanged" VerticalAlignment="Center" />
+                            <Button Content="Pick.." Grid.Column="2" VerticalAlignment="Center" Margin="5,0,0,0" Click="PickFont_Click"></Button>
                         </Grid>
-                        <Label Content="Text Color" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" />
-                        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
-                            <TextBox MinWidth="150" Text="{Binding Config.ImageTextColor, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextChanged="OutputSettingChanged" ></TextBox>
-                            <Button Content="Pick Color..." Click="PickTextColorClick"></Button>
-                        </StackPanel>
+                        <Label Content="Text Color" HorizontalAlignment="Stretch" Grid.Row="2" />
+                        <Grid Grid.Row="2" Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="10*"></ColumnDefinition>
+                                <ColumnDefinition Width="4*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>                            
+                            <TextBox MinWidth="150" Text="{Binding Config.ImageTextColor, Mode=TwoWay}" TextChanged="OutputSettingChanged" Grid.Column="0" VerticalAlignment="Center"></TextBox>
+                            <Button Content="Pick..." Click="PickTextColorClick" Grid.Column="1" Margin="5,0,0,0" VerticalAlignment="Center"></Button>
+                        </Grid>
                         <Label Content="Image Size" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" />
                         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1">
-                            <TextBox MinWidth="50" Text="{Binding Config.ImageWidth, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextChanged="OutputSettingChanged" ></TextBox>
+                            <TextBox MinWidth="50" Text="{Binding Config.ImageWidth, Mode=TwoWay}" TextChanged="OutputSettingChanged" VerticalAlignment="Center" ></TextBox>
                             <Label Content="x"></Label>
-                            <TextBox MinWidth="50" Text="{Binding Config.ImageHeight, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextChanged="OutputSettingChanged" ></TextBox>
+                            <TextBox MinWidth="50" Text="{Binding Config.ImageHeight, Mode=TwoWay}" TextChanged="OutputSettingChanged" VerticalAlignment="Center" ></TextBox>
                             <Label Content="pixels"></Label>
                         </StackPanel>
                         
 
                     </Grid>
+                    <Button Content="Redraw Now" Margin="25" Padding="5" Click="Redraw_Click"/>
                 </StackPanel>
             </TabItem>
         </TabControl>

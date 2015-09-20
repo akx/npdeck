@@ -1,0 +1,30 @@
+﻿<Window x:Class="NpDeck.FontPicker"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Pick Font" Height="272" Width="385" ResizeMode="NoResize">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="110*"/>
+            <ColumnDefinition Width="270*"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="Font" VerticalAlignment="Center"/>
+        <ComboBox x:Name="FontBox" Grid.Column="1" VerticalAlignment="Center" SelectedValue="{Binding TargetFontName}"/>
+
+        <Label Content="Size" VerticalAlignment="Center" Grid.Row="1"/>
+        <Grid Grid.Column="1" VerticalAlignment="Stretch" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="8*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Slider VerticalAlignment="Center" Maximum="200" Value="{Binding TargetFontSize}"></Slider>
+            <TextBox Grid.Column="1" VerticalAlignment="Center" Text="{Binding TargetFontSize}"></TextBox>
+        </Grid>
+        <TextBlock x:Name="PreviewBlock" HorizontalAlignment="Center"  Grid.Row="2" TextWrapping="Wrap" Text="The quick brown fox jumps over the lazy dog" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Margin="56,0,55,69"  FontFamily="{Binding TargetFontName}" FontSize="{Binding TargetFontSize}"/>
+        <Button x:Name="OkButton" Content="OK" VerticalAlignment="Bottom" Grid.Row="3" Grid.ColumnSpan="2" Click="OkButton_Click"></Button>
+    </Grid>
+</Window>
