@@ -22,7 +22,10 @@ namespace NpDeck
 				if (prop.GetCustomAttributes(typeof (IgnoreAttribute), true).Length > 0) continue;
 				var value = prop.GetValue(source, Flags, null, null, null);
 				var valEl = new XElement(prop.Name);
-				valEl.SetAttributeValue("type", prop.PropertyType.Name);
+				if (!(value is string))
+				{
+					valEl.SetAttributeValue("type", prop.PropertyType.Name);
+				}
 				valEl.SetAttributeValue("value", Convert.ToString(value));
 				dest.Add(valEl);
 			}

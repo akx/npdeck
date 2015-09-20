@@ -13,9 +13,24 @@ namespace NpDeck
 {
 	public class Config : INotifyPropertyChanged
 	{
-		private string _format;
+		private string _format = "{np}";
 		private string _destinationFilename;
+		private string _fileEncoding = "UTF-8";
 
+		public static Dictionary<string, Encoding> Encodings = new Dictionary<string, Encoding>
+		{
+			{"UTF-8", new UTF8Encoding(false, false)},
+			{"UTF-8 with BOM", new UTF8Encoding(true, false)},
+			{"UTF-16 LE with BOM", new UnicodeEncoding(false, true, false)},
+			{"UTF-16 LE without BOM", new UnicodeEncoding(false, false, false)},
+			{"UTF-16 BE with BOM", new UnicodeEncoding(true, true, false)},
+			{"UTF-16 BE without BOM", new UnicodeEncoding(true, false, false)},
+			{"UTF-32 LE with BOM", new UTF32Encoding(false, true, false)},
+			{"UTF-32 LE without BOM", new UTF32Encoding(false, false, false)},
+			{"UTF-32 BE with BOM", new UTF32Encoding(true, true, false)},
+			{"UTF-32 BE without BOM", new UTF32Encoding(true, false, false)},
+			{"ASCII", new ASCIIEncoding()}
+		};
 
 		public string Format
 		{
@@ -37,12 +52,24 @@ namespace NpDeck
 			}
 		}
 
+		public string FileEncoding
+		{
+			get { return _fileEncoding; }
+			set {
+				if (Encodings.ContainsKey(value))
+				{
+					_fileEncoding = value;
+				}
+				OnPropertyChanged();
+			}
+		}
+
+
 		[MiniSerialize.Ignore]
 		public List<IDetector> Detectors { get; private set; }
 
 		public Config()
 		{
-			Format = "{np}";
 			DestinationFilename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
 				"npdeck.txt");
 			Detectors = new List<IDetector>
@@ -50,6 +77,7 @@ namespace NpDeck
 				new Winamp(),
 				new Foobar2000()
 			};
+			
 		}
 
 		public void Load()
@@ -71,7 +99,14 @@ namespace NpDeck
 		{
 			var fileLocation = GetFileLocation();
 			var xel = MiniSerialize.Serialize(this);
-			using (XmlWriter xw = new XmlTextWriter(fileLocation, new UTF8Encoding(false, false)))
+			
+
+			using (XmlWriter xw = XmlWriter.Create(fileLocation, new XmlWriterSettings
+			{
+				Indent = true,
+				Encoding = new UTF8Encoding(false, false),
+				OmitXmlDeclaration = false
+			}))
 			{
 				xel.WriteTo(xw);
 			}
@@ -88,6 +123,16 @@ namespace NpDeck
 		{
 			var handler = PropertyChanged;
 			if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		public Encoding GetCurrentEncoding()
+		{
+			Encoding enc;
+			if (!Encodings.TryGetValue(FileEncoding, out enc))
+			{
+				enc = new UTF8Encoding(false, false); // Fallback to UTF-8
+			}
+			return enc;
 		}
 	}
 }

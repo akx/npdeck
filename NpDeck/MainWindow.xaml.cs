@@ -69,6 +69,10 @@ namespace NpDeck
 			_timer.Enabled = true;
 			EnableWrite = true;
 			DoDetect();
+			foreach (var key in Config.Encodings.Keys)
+			{
+				EncodingSelect.Items.Add(key);
+			}
 		}
 
 		private void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
@@ -97,8 +101,9 @@ namespace NpDeck
 			Reformat();
 		}
 
-		private void FormatChanged(object sender, TextChangedEventArgs e)
+		private void OutputSettingChanged(object sender, EventArgs e)
 		{
+			FormattedResult = String.Empty;  // Force reformat
 			Reformat();
 		}
 
@@ -117,7 +122,7 @@ namespace NpDeck
 		{
 			try
 			{
-				File.WriteAllText(Config.DestinationFilename, FormattedResult, new UTF8Encoding(false, false));
+				File.WriteAllText(Config.DestinationFilename, FormattedResult, Config.GetCurrentEncoding());
 			}
 			catch (Exception exc)
 			{
@@ -148,5 +153,6 @@ namespace NpDeck
 		{
 			Config.Save();
 		}
+
 	}
 }
