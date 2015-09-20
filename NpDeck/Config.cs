@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
 using NpDeck.Detectors;
@@ -14,8 +15,16 @@ namespace NpDeck
 	public class Config : INotifyPropertyChanged
 	{
 		private string _format = "{np}";
-		private string _destinationFilename;
+		private string _textFilename;
 		private string _fileEncoding = "UTF-8";
+		private bool _enableText = false;
+		private bool _enableImage = false;
+		private string _imageFilename;
+		private int _imageWidth = 800;
+		private int _imageHeight = 100;
+		private string _imageFontName = "Segoe UI";
+		private int _imageFontSize = 16;
+		private string _imageTextColor = "#ffffff";
 
 		public static Dictionary<string, Encoding> Encodings = new Dictionary<string, Encoding>
 		{
@@ -42,12 +51,12 @@ namespace NpDeck
 			}
 		}
 
-		public string DestinationFilename
+		public string TextFilename
 		{
-			get { return _destinationFilename; }
+			get { return _textFilename; }
 			set
 			{
-				_destinationFilename = value;
+				_textFilename = value;
 				OnPropertyChanged();
 			}
 		}
@@ -64,14 +73,93 @@ namespace NpDeck
 			}
 		}
 
+		public bool EnableText
+		{
+			get { return _enableText; }
+			set
+			{
+				_enableText = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string ImageFilename
+		{
+			get { return _imageFilename; }
+			set
+			{
+				_imageFilename = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public int ImageWidth
+		{
+			get { return _imageWidth; }
+			set
+			{
+				_imageWidth = Math.Max(value, 1);
+				OnPropertyChanged();
+			}
+		}
+
+		public int ImageHeight
+		{
+			get { return _imageHeight; }
+			set
+			{
+				_imageHeight = Math.Max(value, 1);
+				OnPropertyChanged();
+			}
+		}
+
+		public string ImageFontName
+		{
+			get { return _imageFontName; }
+			set
+			{
+				_imageFontName = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public int ImageFontSize
+		{
+			get { return _imageFontSize; }
+			set
+			{
+				_imageFontSize = Math.Max(value, 1);
+				OnPropertyChanged();
+			}
+		}
+
+		public string ImageTextColor
+		{
+			get { return _imageTextColor; }
+			set
+			{
+				_imageTextColor = value;
+				OnPropertyChanged();
+			}
+		}
+		public bool EnableImage
+		{
+			get { return _enableImage; }
+			set
+			{
+				_enableImage = value;
+				OnPropertyChanged();
+			}
+		}
+
 
 		[MiniSerialize.Ignore]
 		public List<IDetector> Detectors { get; private set; }
 
 		public Config()
 		{
-			DestinationFilename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-				"npdeck.txt");
+			TextFilename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "npdeck.txt");
+			ImageFilename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "npdeck.png");
 			Detectors = new List<IDetector>
 			{
 				new Winamp(),

@@ -1,14 +1,19 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
-using Microsoft.Win32;
+using System.Windows.Media;
 using NpDeck.Detectors;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
+using Timer = System.Timers.Timer;
 
 namespace NpDeck
 {
@@ -28,7 +33,7 @@ namespace NpDeck
 		private string _formattedResult;
 		private Result _lastResult;
 		private string _statusText = "Hello!";
-		public bool EnableWrite { get; set; }
+		private Throttle _debouncedReformat;
 
 		public Result LastResult
 		{
@@ -67,12 +72,12 @@ namespace NpDeck
 			DataContext = this;
 			_timer.Elapsed += TimerOnElapsed;
 			_timer.Enabled = true;
-			EnableWrite = true;
 			DoDetect();
 			foreach (var key in Config.Encodings.Keys)
 			{
 				EncodingSelect.Items.Add(key);
 			}
+			_debouncedReformat = new Throttle(Reformat, TimeSpan.FromMilliseconds(500));
 		}
 
 		private void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
@@ -104,7 +109,7 @@ namespace NpDeck
 		private void OutputSettingChanged(object sender, EventArgs e)
 		{
 			FormattedResult = String.Empty;  // Force reformat
-			Reformat();
+			_debouncedReformat.Call();
 		}
 
 		private void Reformat()
@@ -112,21 +117,39 @@ namespace NpDeck
 			var formatted = Config.Format.Replace("{np}", LastResult != null ? LastResult.Title : String.Empty);
 			if (formatted == FormattedResult) return;
 			FormattedResult = formatted;
-			if (EnableWrite)
+			if (_config.EnableText)
 			{
-				SaveOutputFile();
+				SaveText();
+			}
+			if (_config.EnableImage)
+			{
+				SaveImage();
 			}
 		}
 
-		private void SaveOutputFile()
+		private void SaveImage()
 		{
 			try
 			{
-				File.WriteAllText(Config.DestinationFilename, FormattedResult, Config.GetCurrentEncoding());
+				ImageRenderer.Render(FormattedResult, _config);
 			}
 			catch (Exception exc)
 			{
-				StatusText = string.Format("Couldn't save file: {0}", exc);
+				StatusText = string.Format("Couldn't save image: {0}", exc);
+				if (Debugger.IsAttached) throw;
+			}
+		}
+
+		private void SaveText()
+		{
+			try
+			{
+				File.WriteAllText(Config.TextFilename, FormattedResult, Config.GetCurrentEncoding());
+			}
+			catch (Exception exc)
+			{
+				StatusText = string.Format("Couldn't save text: {0}", exc);
+				if (Debugger.IsAttached) throw;
 			}
 		}
 
@@ -141,17 +164,36 @@ namespace NpDeck
 
 		private void DestFileDoubleClick(object sender, MouseButtonEventArgs e)
 		{
-			var sfd = new SaveFileDialog {FileName = Config.DestinationFilename};
+			var sfd = new SaveFileDialog {FileName = Config.TextFilename};
 			var res = sfd.ShowDialog(this);
-			if (res.HasValue && res.Value)
+			if (res.Value)
 			{
-				Config.DestinationFilename = sfd.FileName;
+				Config.TextFilename = sfd.FileName;
 			}
 		}
 
 		private void Window_Closing(object sender, CancelEventArgs e)
 		{
 			Config.Save();
+		}
+
+		private void PickTextColorClick(object sender, RoutedEventArgs e)
+		{
+			Color color = Color.FromRgb(255, 255, 255);
+			try
+			{
+				color = (Color) ColorConverter.ConvertFromString(_config.ImageTextColor);
+			}
+			catch (NullReferenceException nre)
+			{
+				
+			}
+
+			var cd = new ColorDialog {AnyColor = true, Color = System.Drawing.Color.FromArgb(color.R, color.G, color.B), FullOpen = true};
+			if (cd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+			{
+				_config.ImageTextColor = Color.FromRgb(cd.Color.R, cd.Color.G, cd.Color.B).ToString();
+			}
 		}
 
 	}

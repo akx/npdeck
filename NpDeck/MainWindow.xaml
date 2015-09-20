@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
     x:Class="NpDeck.MainWindow"
-    Title="NpDeck" Height="275" Width="525" ResizeMode="CanMinimize" Closing="Window_Closing">
+    Title="NpDeck" Height="398" Width="464" ResizeMode="CanMinimize" Closing="Window_Closing">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -27,7 +27,7 @@
                     </Grid.RowDefinitions>
                     <Label Content="Format" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="0" />
                     <Label Content="Preview" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1" />
-                    <Label Content="{Binding FormattedResult}" HorizontalAlignment="Left" VerticalAlignment="Center"
+                    <Label Content="{Binding FormattedResult}" VerticalAlignment="Center"
                            Grid.Row="1" Grid.Column="1" />
                     <StackPanel Grid.Row="0" Grid.Column="1">
                     <TextBox 
@@ -38,8 +38,11 @@
 
                 </Grid>
             </TabItem>
-            <TabItem Header="Output">
-                <Grid>
+            <TabItem Header="Text Output">
+                <StackPanel>
+
+                    <CheckBox IsChecked="{Binding Config.EnableText, Mode=TwoWay}" Margin="5">Enable Text Output</CheckBox>
+                    <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="50*" />
                         <ColumnDefinition Width="120*" />
@@ -48,16 +51,60 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Config.DestinationFilename, Mode=TwoWay}"
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Config.TextFilename, Mode=TwoWay}"
                              VerticalAlignment="Center" MouseDoubleClick="DestFileDoubleClick" />
-                    <Label Content="Destination File" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" />
-                    <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding EnableWrite, Mode=TwoWay}" Margin="0,5,0,0">Enable File Updating</CheckBox>
-                    <Label Content="Encoding" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" />
-                    <ComboBox x:Name="EncodingSelect" Grid.Row="2" Grid.Column="1" SelectedValue="{Binding Config.FileEncoding, Mode=TwoWay}" SelectionChanged="OutputSettingChanged"/>
+                    <Label Content="Destination File" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
+                    <Label Content="Encoding" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" />
+                    <ComboBox x:Name="EncodingSelect" Grid.Row="1" Grid.Column="1" SelectedValue="{Binding Config.FileEncoding, Mode=TwoWay}" SelectionChanged="OutputSettingChanged"/>
 
                 </Grid>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Image Output">
+                <StackPanel>
+
+                    <CheckBox IsChecked="{Binding Config.EnableImage, Mode=TwoWay}" Margin="5">Enable Image Output</CheckBox>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50*" />
+                            <ColumnDefinition Width="120*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Config.ImageFilename, Mode=TwoWay}" VerticalAlignment="Center" />
+                        <Label Content="Destination File" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="0" />
+                        <Label Content="Font" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" />
+                        <Grid Grid.Row="1" Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="8*"></ColumnDefinition>
+                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding Config.ImageFontName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Center" Grid.Column="0" TextChanged="OutputSettingChanged" />
+                            <TextBox Text="{Binding Config.ImageFontSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" VerticalAlignment="Center" Grid.Column="1" Margin="5,0,0,0" TextChanged="OutputSettingChanged" />
+                        </Grid>
+                        <Label Content="Text Color" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" />
+                        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
+                            <TextBox MinWidth="150" Text="{Binding Config.ImageTextColor, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextChanged="OutputSettingChanged" ></TextBox>
+                            <Button Content="Pick Color..." Click="PickTextColorClick"></Button>
+                        </StackPanel>
+                        <Label Content="Image Size" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" />
+                        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1">
+                            <TextBox MinWidth="50" Text="{Binding Config.ImageWidth, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextChanged="OutputSettingChanged" ></TextBox>
+                            <Label Content="x"></Label>
+                            <TextBox MinWidth="50" Text="{Binding Config.ImageHeight, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" TextChanged="OutputSettingChanged" ></TextBox>
+                            <Label Content="pixels"></Label>
+                        </StackPanel>
+                        
+
+                    </Grid>
+                </StackPanel>
             </TabItem>
         </TabControl>
         <StatusBar Grid.Row="2">
